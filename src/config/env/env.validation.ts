@@ -1,7 +1,8 @@
 import * as Joi from 'joi';
+import { Environment } from './env.config';
 
 export const envValidation = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'production'),
-  PORT: Joi.number().default(3000),
-  MONGODB_URI: Joi.string().required(),
+  [Environment.NODE_ENV]: Joi.string().valid('development', 'production'),
+  [Environment.PORT]: Joi.number().default(3000),
+  [Environment.MONGODB_URI]: Joi.string().required(),
 });
