@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from './dto/CreateUserDto';
-import { User } from 'src/common/interfaces';
+import { LoginPayload, UserDto } from 'src/common/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<Omit<UserDto, 'password'> | null> {
     const user = await this.usersService.findUserByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...userWithoutPassword } = user;
@@ -27,8 +30,12 @@ export class AuthService {
     return await this.usersService.create(createUserDto);
   }
 
-  async login(user: User): Promise<{ access_token: string }> {
-    const payload = { email: user.name, sub: user.id, role: user.role };
+  async login(user: UserDto): Promise<{ access_token: string }> {
+    const payload: LoginPayload = {
+      email: user.name,
+      sub: user.id.toString(),
+      role: user.role,
+    };
 
     return {
       access_token: this.jwtService.sign(payload),
