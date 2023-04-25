@@ -7,6 +7,9 @@ import { envValidation } from './config/env/env.validation';
 
 import { typeOrmModuleConfig } from './config/typeOrmModule.config';
 
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,14 +21,12 @@ import { typeOrmModuleConfig } from './config/typeOrmModule.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        console.log(await typeOrmModuleConfig(configService));
-
         return await typeOrmModuleConfig(configService);
       },
       inject: [ConfigService],
     }),
+    AuthModule,
+    UsersModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
