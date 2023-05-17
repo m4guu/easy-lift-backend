@@ -1,7 +1,7 @@
-import { UserDto } from 'src/common/interfaces';
+import { User } from 'src/common/interfaces';
 
 export const defaultNewUserProps: Omit<
-  UserDto,
+  User,
   'id' | 'email' | 'role' | 'password'
 > = {
   isConfigured: false,

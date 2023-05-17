@@ -12,7 +12,6 @@ export enum Environment {
   EXPIRATION_TIME = 'EXPIRATION_TIME',
 }
 
-// ? QUESTION: how to typed envs ?
 export const envConfig = () => ({
   [Environment.NODE_ENV]: process.env.NODE_ENV,
   [Environment.PORT]: parseInt(process.env.PORT),

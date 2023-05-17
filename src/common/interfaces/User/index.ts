@@ -2,7 +2,7 @@ import { ObjectId } from 'typeorm';
 import { Role } from 'src/common/enums';
 import BodyWeight from '../BodyWeight';
 
-interface UserDto {
+interface User {
   id: ObjectId;
   name: string;
   email: string;
@@ -17,4 +17,4 @@ interface UserDto {
   expirationDate: string;
 }
 
-export default UserDto;
+export default User;

@@ -30,7 +30,7 @@ class User {
   description: string;
 
   @Column()
-  gyms: string[];
+  gyms?: string[];
 
   @Column()
   bodyWeights: BodyWeight[];

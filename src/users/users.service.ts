@@ -34,7 +34,6 @@ export class UsersService {
     });
     await this.usersRepository.save(user);
 
-    // ? QUESTION: what i should return here ? newUser without password ?
     return true;
   }
 }
