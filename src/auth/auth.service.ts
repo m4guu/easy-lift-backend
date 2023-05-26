@@ -23,14 +23,13 @@ export class AuthService {
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
-    return null;
   }
 
   async register(createUserDto: CreateUserDto): Promise<boolean> {
     return await this.usersService.create(createUserDto);
   }
 
-  async login(user: User): Promise<{ access_token: string }> {
+  async login(user: User): Promise<{ user: User; token: string }> {
     const payload: LoginPayload = {
       email: user.email,
       sub: user.id.toString(),
@@ -38,7 +37,8 @@ export class AuthService {
     };
 
     return {
-      access_token: this.jwtService.sign(payload),
+      user,
+      token: this.jwtService.sign(payload),
     };
   }
 }
