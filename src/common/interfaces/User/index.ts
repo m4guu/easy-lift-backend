@@ -10,11 +10,11 @@ interface User {
   role: Role;
   isConfigured: boolean;
   image: string;
+  expirationDate: string;
   description?: string;
   gyms?: string[];
   bodyWeights?: BodyWeight[];
   height?: number;
-  expirationDate: string;
 }
 
 export default User;

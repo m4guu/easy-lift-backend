@@ -5,7 +5,6 @@ import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/common/entities';
 import { MongoRepository } from 'typeorm';
-import { defaultNewUserProps } from './constans';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +29,7 @@ export class UsersService {
       email: createUserDto.email,
       role: createUserDto.role,
       password: hashedPassword,
-      ...defaultNewUserProps,
+      isConfigured: false,
     });
     await this.usersRepository.save(user);
 

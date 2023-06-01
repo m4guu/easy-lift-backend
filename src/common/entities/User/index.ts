@@ -30,9 +30,6 @@ class User {
   description: string;
 
   @Column()
-  gyms?: string[];
-
-  @Column()
   bodyWeights: BodyWeight[];
 
   @Column()
@@ -40,5 +37,8 @@ class User {
 
   @Column()
   expirationDate: string;
+
+  @Column()
+  gyms?: string[];
 }
 export default User;
