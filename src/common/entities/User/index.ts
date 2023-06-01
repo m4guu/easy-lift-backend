@@ -24,7 +24,7 @@ class User {
   isConfigured: boolean;
 
   @Column()
-  image: string;
+  image: string | null;
 
   @Column()
   description: string;

@@ -1,38 +1,16 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
-import { HasRole } from 'src/auth/decorators/has-role.decorator';
+import { Controller, Put, Body, Param, UseGuards } from '@nestjs/common';
 
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RoleGuard } from 'src/auth/guards/role.guard';
-import { Role } from 'src/common/enums';
 import { UsersService } from './users.service';
-import { User } from 'src/common/entities';
+import { UpdatedUserDto } from './dto/UpdatedUserDto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@Controller()
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('users')
-  getUsers(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
-
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
-  @HasRole(Role.trainer)
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Get('trainer')
-  onlyTrainer(@Request() req) {
-    return req.user;
-  }
-
-  @HasRole(Role.user)
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Get('user')
-  onlyUser(@Request() req) {
-    return req.user;
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updatedUser: UpdatedUserDto) {
+    return this.usersService.update(id, updatedUser);
   }
 }
