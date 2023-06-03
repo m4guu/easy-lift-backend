@@ -1,14 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { envFilePath, envConfig } from './config/env/env.config';
-import { envValidation } from './config/env/env.validation';
-
 import { typeOrmModuleConfig } from './config/typeOrmModule.config';
+import { envValidation } from './config/env/env.validation';
 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+
+import { UploadPaths } from './common/enums';
 
 @Module({
   imports: [
@@ -24,6 +27,13 @@ import { AuthModule } from './auth/auth.module';
         return await typeOrmModuleConfig(configService);
       },
       inject: [ConfigService],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads', 'avatars'),
+      serveRoot: UploadPaths.USERS_AVATARS,
+      serveStaticOptions: {
+        index: false, // Disable serving index.html
+      },
     }),
     AuthModule,
     UsersModule,

@@ -9,7 +9,7 @@ interface User {
   password: string;
   role: Role;
   isConfigured: boolean;
-  image: string;
+  image: string | File;
   expirationDate: string;
   description?: string;
   gyms?: string[];

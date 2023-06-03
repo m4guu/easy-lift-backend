@@ -5,8 +5,10 @@ import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/common/entities';
 import { MongoRepository } from 'typeorm';
-import { UpdatedUserDto } from './dto/UpdatedUserDto';
+import { ConfiguredUserDto } from './dto/ConfiguredUserDto';
 import { ObjectId } from 'mongodb';
+import { BodyWeight } from 'src/common/interfaces';
+import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer';
 
 @Injectable()
 export class UsersService {
@@ -38,19 +40,53 @@ export class UsersService {
     return true;
   }
 
-  async update(
+  async configureUser(
     userId: string,
-    updatedUserDto: UpdatedUserDto,
+    configuredUserDto: ConfiguredUserDto,
+    filePath: string,
   ): Promise<boolean> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
     });
 
+    const configuredUser: Partial<User> = {
+      name: configuredUserDto.name,
+      isConfigured: true,
+      image: filePath,
+      bodyWeights: JSON.parse(configuredUserDto.bodyWeights),
+      height: Number(configuredUserDto.height),
+    };
+
     if (user && user.id) {
-      await this.usersRepository.update(user.id, updatedUserDto);
+      await this.usersRepository.update(user.id, configuredUser);
       return true;
     } else {
       throw new NotFoundException('User not found');
+    }
+  }
+
+  async configureTrainer(
+    userId: string,
+    configuredTrainerDto: ConfiguredTrainerDto,
+    filePath: string,
+  ): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({
+      _id: new ObjectId(userId),
+    });
+
+    const configuredTrainer: Partial<User> = {
+      name: configuredTrainerDto.name,
+      isConfigured: true,
+      image: filePath,
+      description: configuredTrainerDto.description,
+      gyms: JSON.parse(configuredTrainerDto.gyms),
+    };
+
+    if (user && user.id) {
+      await this.usersRepository.update(user.id, configuredTrainer);
+      return true;
+    } else {
+      throw new NotFoundException('Trainer not found');
     }
   }
 }

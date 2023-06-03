@@ -5,3 +5,6 @@
 # env
 /src/config/env/.env.development
 /src/config/env/.env.production
+
+# uploads
+/uploads

@@ -24,19 +24,19 @@ class User {
   isConfigured: boolean;
 
   @Column()
-  image: string | null;
-
-  @Column()
-  description: string;
-
-  @Column()
-  bodyWeights: BodyWeight[];
-
-  @Column()
-  height: number;
+  image: string;
 
   @Column()
   expirationDate: string;
+
+  @Column()
+  bodyWeights?: BodyWeight[];
+
+  @Column()
+  height?: number;
+
+  @Column()
+  description?: string;
 
   @Column()
   gyms?: string[];
