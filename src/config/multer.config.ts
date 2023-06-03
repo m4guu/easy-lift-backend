@@ -34,6 +34,7 @@ export const multerOptions: MulterOptions = {
       file: Express.Multer.File,
       cb: (error: Error | null, filename: string) => void,
     ) {
+      // ? question: how i can make new folder ?
       if (!existsSync('.' + UploadPaths.USERS_AVATARS)) {
         mkdirSync('.' + UploadPaths.USERS_AVATARS);
       }
