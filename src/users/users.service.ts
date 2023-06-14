@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
@@ -7,8 +11,8 @@ import { User } from 'src/common/entities';
 import { MongoRepository } from 'typeorm';
 import { ConfiguredUserDto } from './dto/ConfiguredUserDto';
 import { ObjectId } from 'mongodb';
-import { BodyWeight } from 'src/common/interfaces';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer';
+import { UpdateEmailDto } from './dto/UpdateEmail';
 
 @Injectable()
 export class UsersService {
@@ -87,6 +91,24 @@ export class UsersService {
       return true;
     } else {
       throw new NotFoundException('Trainer not found');
+    }
+  }
+
+  async updateEmail(updateEmailDto: UpdateEmailDto): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({
+      _id: new ObjectId(updateEmailDto.userId),
+    });
+
+    if (
+      user &&
+      (await bcrypt.compare(updateEmailDto.password, user.password))
+    ) {
+      await this.usersRepository.update(user.id, {
+        email: updateEmailDto.newEmail,
+      });
+      return true;
+    } else {
+      throw new BadRequestException('Wrong password');
     }
   }
 }

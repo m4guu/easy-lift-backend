@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 import { multerOptions } from 'src/config/multer.config';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer';
+import { UpdateEmailDto } from './dto/UpdateEmail';
 
 @Controller('users')
 export class UsersController {
@@ -44,5 +45,11 @@ export class UsersController {
       configuredTrainerDto,
       file.path,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/updateEmail')
+  async updateEmail(@Body() updateEmailDto: UpdateEmailDto) {
+    return this.usersService.updateEmail(updateEmailDto);
   }
 }
