@@ -13,8 +13,8 @@ export class ConfiguredUserDto {
 
   image: File;
 
-  @IsString()
-  bodyWeights: string;
+  @IsNumberString()
+  currentWeight: number;
 
   @IsNumberString()
   height: number;

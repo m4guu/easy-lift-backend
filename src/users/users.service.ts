@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -15,12 +17,15 @@ import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { saltRounds } from './constans';
+import { WeightHistoryService } from 'src/weight-history/weight-history.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: MongoRepository<User>,
+    @Inject(forwardRef(() => WeightHistoryService))
+    private weightHistoryService: WeightHistoryService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -41,7 +46,11 @@ export class UsersService {
       password: hashedPassword,
       isConfigured: false,
     });
-    await this.usersRepository.save(user);
+
+    await this.usersRepository.save(user).then(async () => {
+      // create user weight history
+      await this.weightHistoryService.create(user.id.toString());
+    });
 
     return true;
   }
@@ -59,12 +68,33 @@ export class UsersService {
       name: configuredUserDto.name,
       isConfigured: true,
       image: filePath || user.image,
-      bodyWeights: JSON.parse(configuredUserDto.bodyWeights),
+      currentWeight: Number(configuredUserDto.currentWeight),
       height: Number(configuredUserDto.height),
     };
 
     if (user && user.id) {
-      await this.usersRepository.update(user.id, configuredUser);
+      await this.usersRepository
+        .update(user.id, configuredUser)
+        .then(async () => {
+          // update user weight history
+          await this.weightHistoryService.update({
+            userId: user.id.toString(),
+            weight: Number(configuredUserDto.currentWeight),
+          });
+        });
+      return true;
+    } else {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+  async updateUserWeight(userId: string, weight: number): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({
+      _id: new ObjectId(userId),
+    });
+
+    if (user && user.id) {
+      await this.usersRepository.update(user.id, { currentWeight: weight });
       return true;
     } else {
       throw new NotFoundException('User not found');

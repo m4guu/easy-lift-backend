@@ -1,6 +1,5 @@
 import { ObjectId } from 'typeorm';
 import { Role } from 'src/common/enums';
-import BodyWeight from '../BodyWeight';
 
 interface User {
   id: ObjectId;
@@ -11,9 +10,9 @@ interface User {
   isConfigured: boolean;
   image: string | File;
   expirationDate: string;
+  currentWeight?: number;
   description?: string;
   gyms?: string[];
-  bodyWeights?: BodyWeight[];
   height?: number;
 }
 

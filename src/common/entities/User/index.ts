@@ -1,7 +1,6 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
 import { Role } from 'src/common/enums';
-import { BodyWeight } from 'src/common/interfaces';
 
 @Entity()
 class User {
@@ -30,7 +29,7 @@ class User {
   expirationDate: string;
 
   @Column()
-  bodyWeights?: BodyWeight[];
+  currentWeight?: number;
 
   @Column()
   height?: number;

@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 
 import { UploadPaths } from './common/enums';
+import { WeightHistoryModule } from './weight-history/weight-history.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UploadPaths } from './common/enums';
     }),
     AuthModule,
     UsersModule,
+    WeightHistoryModule,
   ],
 })
 export class AppModule {}
