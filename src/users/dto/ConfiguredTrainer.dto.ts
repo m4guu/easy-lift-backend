@@ -6,7 +6,7 @@ export class ConfiguredTrainerDto {
   @MaxLength(15)
   name: string;
 
-  image: File;
+  image: File | undefined;
 
   @IsString()
   @MinLength(20)

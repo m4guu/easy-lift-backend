@@ -27,10 +27,12 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image', multerOptions))
   async configureUser(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Body() configuredUserDto: ConfiguredUserDto,
   ) {
-    return this.usersService.configureUser(id, configuredUserDto, file.path);
+    const imagePath = file ? file.path : undefined;
+
+    return this.usersService.configureUser(id, configuredUserDto, imagePath);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,13 +40,15 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image', multerOptions))
   async configureTrainer(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Body() configuredTrainerDto: ConfiguredTrainerDto,
   ) {
+    const imagePath = file ? file.path : undefined;
+
     return this.usersService.configureTrainer(
       id,
       configuredTrainerDto,
-      file.path,
+      imagePath,
     );
   }
 

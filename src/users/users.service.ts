@@ -49,7 +49,7 @@ export class UsersService {
   async configureUser(
     userId: string,
     configuredUserDto: ConfiguredUserDto,
-    filePath: string,
+    filePath: string | undefined,
   ): Promise<boolean> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
@@ -58,7 +58,7 @@ export class UsersService {
     const configuredUser: Partial<User> = {
       name: configuredUserDto.name,
       isConfigured: true,
-      image: filePath,
+      image: filePath || user.image,
       bodyWeights: JSON.parse(configuredUserDto.bodyWeights),
       height: Number(configuredUserDto.height),
     };
@@ -74,7 +74,7 @@ export class UsersService {
   async configureTrainer(
     userId: string,
     configuredTrainerDto: ConfiguredTrainerDto,
-    filePath: string,
+    filePath?: string,
   ): Promise<boolean> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
@@ -83,7 +83,7 @@ export class UsersService {
     const configuredTrainer: Partial<User> = {
       name: configuredTrainerDto.name,
       isConfigured: true,
-      image: filePath,
+      image: filePath || user.image,
       description: configuredTrainerDto.description,
       gyms: JSON.parse(configuredTrainerDto.gyms),
     };
