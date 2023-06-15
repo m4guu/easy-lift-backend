@@ -7,6 +7,7 @@ export class UpdateEmailDto {
   @IsEmail()
   newEmail: string;
 
+  @IsString()
   @MinLength(5)
   @MaxLength(15)
   password: string;

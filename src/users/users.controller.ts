@@ -10,12 +10,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { UsersService } from './users.service';
-import { ConfiguredUserDto } from './dto/ConfiguredUserDto';
+import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 import { multerOptions } from 'src/config/multer.config';
-import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer';
-import { UpdateEmailDto } from './dto/UpdateEmail';
+import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
+import { UpdateEmailDto } from './dto/UpdateEmail.dto';
+import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 
 @Controller('users')
 export class UsersController {
@@ -51,5 +52,11 @@ export class UsersController {
   @Patch('/updateEmail')
   async updateEmail(@Body() updateEmailDto: UpdateEmailDto) {
     return this.usersService.updateEmail(updateEmailDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/updatePassword')
+  async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
+    return this.usersService.updatePassword(updatePasswordDto);
   }
 }

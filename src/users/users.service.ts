@@ -9,10 +9,12 @@ import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/common/entities';
 import { MongoRepository } from 'typeorm';
-import { ConfiguredUserDto } from './dto/ConfiguredUserDto';
+import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
 import { ObjectId } from 'mongodb';
-import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer';
-import { UpdateEmailDto } from './dto/UpdateEmail';
+import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
+import { UpdateEmailDto } from './dto/UpdateEmail.dto';
+import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
+import { saltRounds } from './constans';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +32,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<boolean> {
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
     const user = this.usersRepository.create({
@@ -105,6 +107,30 @@ export class UsersService {
     ) {
       await this.usersRepository.update(user.id, {
         email: updateEmailDto.newEmail,
+      });
+      return true;
+    } else {
+      throw new BadRequestException('Wrong password');
+    }
+  }
+
+  async updatePassword(updatePasswordDto: UpdatePasswordDto): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({
+      _id: new ObjectId(updatePasswordDto.userId),
+    });
+
+    if (
+      user &&
+      (await bcrypt.compare(updatePasswordDto.password, user.password))
+    ) {
+      const newSalt = await bcrypt.genSalt(saltRounds);
+      const newHashedPassword = await bcrypt.hash(
+        updatePasswordDto.newPassword,
+        newSalt,
+      );
+
+      await this.usersRepository.update(user.id, {
+        password: newHashedPassword,
       });
       return true;
     } else {
