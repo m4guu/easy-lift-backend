@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 
 import { UploadPaths } from './common/enums';
 import { WeightHistoryModule } from './weight-history/weight-history.module';
+import { WorkoutsModule } from './workouts/workouts.module';
+import { ProgramsModule } from './programs/programs.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { WeightHistoryModule } from './weight-history/weight-history.module';
     AuthModule,
     UsersModule,
     WeightHistoryModule,
+    WorkoutsModule,
+    ProgramsModule,
   ],
 })
 export class AppModule {}
