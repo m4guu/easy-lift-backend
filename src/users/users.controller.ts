@@ -1,38 +1,66 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
-import { HasRole } from 'src/auth/decorators/has-role.decorator';
+import {
+  Controller,
+  Patch,
+  Body,
+  Param,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RoleGuard } from 'src/auth/guards/role.guard';
-import { Role } from 'src/common/enums';
 import { UsersService } from './users.service';
-import { User } from 'src/common/entities';
+import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@Controller()
+import { multerOptions } from 'src/config/multer.config';
+import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
+import { UpdateEmailDto } from './dto/UpdateEmail.dto';
+import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
+
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('users')
-  getUsers(): Promise<User[]> {
-    return this.usersService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @Patch('/configure/user/:id')
+  @UseInterceptors(FileInterceptor('image', multerOptions))
+  async configureUser(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() configuredUserDto: ConfiguredUserDto,
+  ) {
+    const imagePath = file ? file.path : undefined;
+
+    return this.usersService.configureUser(id, configuredUserDto, imagePath);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Patch('/configure/trainer/:id')
+  @UseInterceptors(FileInterceptor('image', multerOptions))
+  async configureTrainer(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() configuredTrainerDto: ConfiguredTrainerDto,
+  ) {
+    const imagePath = file ? file.path : undefined;
+
+    return this.usersService.configureTrainer(
+      id,
+      configuredTrainerDto,
+      imagePath,
+    );
   }
 
-  @HasRole(Role.trainer)
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Get('trainer')
-  onlyTrainer(@Request() req) {
-    return req.user;
+  @UseGuards(JwtAuthGuard)
+  @Patch('/updateEmail')
+  async updateEmail(@Body() updateEmailDto: UpdateEmailDto) {
+    return this.usersService.updateEmail(updateEmailDto);
   }
 
-  @HasRole(Role.user)
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Get('user')
-  onlyUser(@Request() req) {
-    return req.user;
+  @UseGuards(JwtAuthGuard)
+  @Patch('/updatePassword')
+  async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
+    return this.usersService.updatePassword(updatePasswordDto);
   }
 }
