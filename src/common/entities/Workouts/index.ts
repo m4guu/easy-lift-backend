@@ -13,8 +13,8 @@ class Workouts {
   @Column()
   title: string;
 
-  @Column()
-  date: string;
+  @Column({ type: 'date' })
+  date: Date;
 
   @Column()
   isDraft: boolean;

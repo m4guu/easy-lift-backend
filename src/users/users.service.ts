@@ -28,8 +28,8 @@ export class UsersService {
     private weightHistoryService: WeightHistoryService,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findOne(id: string): Promise<User> {
+    return await this.usersRepository.findOneBy({ _id: new ObjectId(id) });
   }
 
   async findUserByEmail(userEmail: string): Promise<User | undefined> {

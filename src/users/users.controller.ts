@@ -1,6 +1,7 @@
 import {
   Controller,
   Patch,
+  Get,
   Body,
   Param,
   UseGuards,
@@ -21,6 +22,12 @@ import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/configure/user/:id')
