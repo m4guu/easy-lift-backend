@@ -16,7 +16,7 @@ export const multerOptions: MulterOptions = {
     file: Express.Multer.File,
     cb: (error: Error, acceptFile: boolean) => void,
   ) {
-    if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
+    if (file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
       cb(null, true);
     } else {
       cb(

@@ -1,6 +1,8 @@
 import {
   Controller,
   Patch,
+  Get,
+  Query,
   Body,
   Param,
   UseGuards,
@@ -17,10 +19,23 @@ import { multerOptions } from 'src/config/multer.config';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
+import { UsersByRoleQueryDto } from './dto/UsersByRoleQueryDto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async findUsersByRole(@Query() query: UsersByRoleQueryDto) {
+    return this.usersService.getUsersByRole(query.role, +query.page);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/configure/user/:id')

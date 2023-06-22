@@ -18,6 +18,8 @@ import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { saltRounds } from './constans';
 import { WeightHistoryService } from 'src/weight-history/weight-history.service';
+import { Role } from 'src/common/enums';
+import { PAGE_SIZE } from 'src/config/constans';
 
 @Injectable()
 export class UsersService {
@@ -28,8 +30,17 @@ export class UsersService {
     private weightHistoryService: WeightHistoryService,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findOne(id: string): Promise<User> {
+    return await this.usersRepository.findOneBy({ _id: new ObjectId(id) });
+  }
+
+  async getUsersByRole(role: Role, page: number): Promise<User[]> {
+    const skip = (+page - 1) * PAGE_SIZE;
+    return await this.usersRepository.find({
+      where: { role },
+      skip,
+      take: PAGE_SIZE,
+    });
   }
 
   async findUserByEmail(userEmail: string): Promise<User | undefined> {

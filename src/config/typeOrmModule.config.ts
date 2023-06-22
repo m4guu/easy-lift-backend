@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 
 import { Environment } from './env/env.config';
-import { User, WeightHistory } from 'src/common/entities';
+import { User, WeightHistory, Workouts, Programs } from 'src/common/entities';
 
 export const typeOrmModuleConfig = async (
   configService: ConfigService,
@@ -10,7 +10,7 @@ export const typeOrmModuleConfig = async (
   return {
     type: 'mongodb',
     url: configService.get<string>(Environment.MONGODB_URI),
-    entities: [User, WeightHistory],
+    entities: [User, WeightHistory, Workouts, Programs],
     synchronize: true,
   };
 };
