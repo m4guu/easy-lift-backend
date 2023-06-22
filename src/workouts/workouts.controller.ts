@@ -12,8 +12,7 @@ import {
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
 import { WorkoutsService } from './workouts.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserWorkoutsQueryDto } from './dto/UserWorkoutsQueryDto';
-import { UserWorkoutsByMonthQueryDto } from './dto/UserWorkoutsByMonthQueryDto';
+import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
 import { Role } from 'src/common/enums';
 import { HasRole } from 'src/auth/decorators/has-role.decorator';
 
@@ -22,21 +21,15 @@ export class WorkoutsController {
   constructor(private readonly workoutService: WorkoutsService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('userWorkouts')
-  async findWorkoutsByUserId(@Query() query: UserWorkoutsQueryDto) {
-    return await this.workoutService.findWorkoutsByUserId(query);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('userWorkoutsByMonth')
-  async findUserWorkoutsByMonth(@Query() query: UserWorkoutsByMonthQueryDto) {
-    return await this.workoutService.findWorkoutsByMonth(query);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.workoutService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async findAll(@Query() query: GetWorkoutsQueryDto) {
+    return await this.workoutService.findAllByQueries(query);
   }
 
   @UseGuards(JwtAuthGuard)

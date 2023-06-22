@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Programs } from 'src/common/entities';
-import { MongoRepository } from 'typeorm';
+import { MongoRepository, FindOptionsWhere } from 'typeorm';
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { ProgramLevels } from 'src/common/enums';
 import { ObjectId } from 'mongodb';
+import { PAGE_SIZE } from 'src/config/constans';
+import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
 
 @Injectable()
 export class ProgramsService {
@@ -17,34 +19,19 @@ export class ProgramsService {
     return await this.programsRepository.findOneBy({ _id: new ObjectId(id) });
   }
 
-  async findAll(page: number): Promise<Programs[]> {
-    const pageSize = 10;
-    const skip = (+page - 1) * pageSize;
+  async findAll(query: GetProgramsQueryDto): Promise<Programs[]> {
+    const skip = (+query.page - 1) * PAGE_SIZE;
+    const take = +query.limit || PAGE_SIZE;
 
+    const filter: FindOptionsWhere<Programs> = {};
+    if (query.creator) {
+      filter.creator = query.creator;
+    }
     return await this.programsRepository.find({
+      where: filter,
       skip,
-      take: pageSize,
+      take,
     });
-  }
-
-  async findTrainerPrograms(
-    trainerId: string,
-    page: number,
-  ): Promise<Programs[]> {
-    const pageSize = 10;
-    const skip = (+page - 1) * pageSize;
-
-    return await this.programsRepository.find({
-      where: { 'creator.id': trainerId },
-      skip,
-      take: pageSize,
-    });
-  }
-
-  async get10Programs(): Promise<Programs[]> {
-    return await this.programsRepository
-      .aggregate([{ $sample: { size: 10 } }])
-      .toArray();
   }
 
   async createProgram(
@@ -52,7 +39,7 @@ export class ProgramsService {
     filePath: string,
   ): Promise<boolean> {
     const newProgram = this.programsRepository.create({
-      creator: JSON.parse(program.creator),
+      creator: program.creator,
       title: program.title,
       level: program.level as ProgramLevels,
       frequencyPerWeek: Number(program.frequencyPerWeek),
@@ -70,7 +57,7 @@ export class ProgramsService {
   async update(
     programId: string,
     updatedProgram: Partial<CreateProgramDto>,
-    filePath: string | undefined,
+    filePath?: string,
   ): Promise<boolean> {
     const program = await this.programsRepository.findOneBy({
       _id: new ObjectId(programId),

@@ -1,7 +1,7 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
 import { ProgramLevels } from 'src/common/enums';
-import { Creator, ProgramItem } from 'src/common/interfaces';
+import { ProgramItem } from 'src/common/interfaces';
 
 @Entity()
 class Programs {
@@ -9,7 +9,7 @@ class Programs {
   id: ObjectId;
 
   @Column()
-  creator: Creator;
+  creator: string;
 
   @Column()
   title: string;

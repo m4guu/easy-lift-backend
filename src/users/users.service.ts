@@ -19,6 +19,7 @@ import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { saltRounds } from './constans';
 import { WeightHistoryService } from 'src/weight-history/weight-history.service';
 import { Role } from 'src/common/enums';
+import { PAGE_SIZE } from 'src/config/constans';
 
 @Injectable()
 export class UsersService {
@@ -34,12 +35,11 @@ export class UsersService {
   }
 
   async getUsersByRole(role: Role, page: number): Promise<User[]> {
-    const pageSize = 10;
-    const skip = (+page - 1) * pageSize;
+    const skip = (+page - 1) * PAGE_SIZE;
     return await this.usersRepository.find({
       where: { role },
       skip,
-      take: pageSize,
+      take: PAGE_SIZE,
     });
   }
 

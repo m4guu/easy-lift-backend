@@ -18,25 +18,11 @@ import { Role } from 'src/common/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
 import { CreateProgramDto } from './dto/CreateProgramDto';
+import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
 
 @Controller('programs')
 export class ProgramsController {
   constructor(private readonly programsService: ProgramsService) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Get('trainer-programs/:id')
-  async findTrainerPrograms(
-    @Param('id') id: string,
-    @Query() query: { page: string },
-  ) {
-    return await this.programsService.findTrainerPrograms(id, +query.page);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('10-programs')
-  async get10Programs() {
-    return await this.programsService.get10Programs();
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
@@ -46,8 +32,8 @@ export class ProgramsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Query() query: { page: string }) {
-    return await this.programsService.findAll(+query.page);
+  async findAll(@Query() query: GetProgramsQueryDto) {
+    return await this.programsService.findAll(query);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,7 +54,7 @@ export class ProgramsController {
   async update(
     @Param('id') id: string,
     @Body() updatedProgram: Partial<CreateProgramDto>,
-    @UploadedFile() file: Express.Multer.File | undefined,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     const imagePath = file ? file.path : undefined;
     return await this.programsService.update(id, updatedProgram, imagePath);

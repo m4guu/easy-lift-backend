@@ -6,4 +6,3 @@ export { default as WorkoutExercise } from './WorkoutExercise';
 export { default as ProgramItem } from './ProgramItem';
 export { default as Workout } from './Workout';
 export { default as Set } from './Set';
-export { default as Creator } from './Creator';

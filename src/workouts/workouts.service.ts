@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workouts } from 'src/common/entities';
-import { MongoRepository } from 'typeorm';
+import { FindOptionsWhere, MongoRepository, Between } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
-import { UserWorkoutsQueryDto } from './dto/UserWorkoutsQueryDto';
-import { UserWorkoutsByMonthQueryDto } from './dto/UserWorkoutsByMonthQueryDto';
+import { PAGE_SIZE } from 'src/config/constans';
+import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
 
 @Injectable()
 export class WorkoutsService {
@@ -18,34 +18,27 @@ export class WorkoutsService {
     return await this.workoutsRepository.findOneBy({ _id: new ObjectId(id) });
   }
 
-  async findWorkoutsByUserId(query: UserWorkoutsQueryDto): Promise<Workouts[]> {
-    const { creator: userId, page } = query;
+  async findAllByQueries(query: GetWorkoutsQueryDto): Promise<Workouts[]> {
+    const skip = (+query.page - 1) * PAGE_SIZE;
 
-    const pageSize = 10;
-    const skip = (+page - 1) * pageSize;
+    const filter: FindOptionsWhere<Workouts> = {};
+    console.log(query.monthNumber);
+
+    if (query.creator) {
+      filter.creator = query.creator;
+    }
+    if (query.monthNumber) {
+      const year = new Date().getFullYear();
+      const startOfMonth = new Date(year, +query.monthNumber - 1, 1);
+      const endOfMonth = new Date(year, +query.monthNumber, 0, 23, 59, 59);
+      // ? question: why this is not working ?
+      filter.date = Between(startOfMonth, endOfMonth);
+    }
 
     return await this.workoutsRepository.find({
-      where: { creator: userId },
+      where: filter,
       skip,
-      take: pageSize,
-    });
-  }
-
-  async findWorkoutsByMonth(
-    query: UserWorkoutsByMonthQueryDto,
-  ): Promise<Workouts[]> {
-    const year = new Date().getFullYear();
-    const startOfMonth = new Date(year, +query.monthNumber - 1, 1);
-    const endOfMonth = new Date(year, +query.monthNumber, 0, 23, 59, 59);
-
-    return await this.workoutsRepository.find({
-      where: {
-        creator: query.userId,
-        date: {
-          $gte: startOfMonth,
-          $lte: endOfMonth,
-        },
-      },
+      take: PAGE_SIZE,
     });
   }
 
