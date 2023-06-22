@@ -1,1 +1,2 @@
-export { default as generateTrainerFiltersByQuery } from './GenerateTrainerFilterByQuery';
+export { default as generateTrainerFiltersByQuery } from './GenerateTrainerFiltersByQuery';
+export { default as generateProgramFiltersByQuery } from './GenerateProgramFiltersByQuery';
