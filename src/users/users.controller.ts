@@ -19,7 +19,7 @@ import { multerOptions } from 'src/config/multer.config';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
-import { UsersByRoleQueryDto } from './dto/UsersByRoleQueryDto';
+import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
 
 @Controller('users')
 export class UsersController {
@@ -33,8 +33,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findUsersByRole(@Query() query: UsersByRoleQueryDto) {
-    return this.usersService.getUsersByRole(query.role, +query.page);
+  async findTrainersByQuery(@Query() query: TrainersByQueryDto) {
+    return this.usersService.findTrainersByQuery(query);
   }
 
   @UseGuards(JwtAuthGuard)

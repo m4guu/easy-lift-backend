@@ -22,7 +22,6 @@ export class WorkoutsService {
     const skip = (+query.page - 1) * PAGE_SIZE;
 
     const filter: FindOptionsWhere<Workouts> = {};
-    console.log(query.monthNumber);
 
     if (query.creator) {
       filter.creator = query.creator;
