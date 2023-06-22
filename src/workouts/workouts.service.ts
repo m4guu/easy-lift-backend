@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
 import { PAGE_SIZE } from 'src/config/constans';
 import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
+import generateWorkoutFiltersByQuery from 'src/utils/GenerateWorkoutFiltersByQuery';
 
 @Injectable()
 export class WorkoutsService {
@@ -21,21 +22,10 @@ export class WorkoutsService {
   async findAllByQueries(query: GetWorkoutsQueryDto): Promise<Workouts[]> {
     const skip = (+query.page - 1) * PAGE_SIZE;
 
-    const filter: FindOptionsWhere<Workouts> = {};
-
-    if (query.creator) {
-      filter.creator = query.creator;
-    }
-    if (query.monthNumber) {
-      const year = new Date().getFullYear();
-      const startOfMonth = new Date(year, +query.monthNumber - 1, 1);
-      const endOfMonth = new Date(year, +query.monthNumber, 0, 23, 59, 59);
-      // ? question: why this is not working ?
-      filter.date = Between(startOfMonth, endOfMonth);
-    }
+    const filters = generateWorkoutFiltersByQuery(query);
 
     return await this.workoutsRepository.find({
-      where: filter,
+      where: filters,
       skip,
       take: PAGE_SIZE,
     });
