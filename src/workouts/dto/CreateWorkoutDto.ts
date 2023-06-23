@@ -7,7 +7,6 @@ import {
   ArrayMinSize,
   IsDateString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 import { WorkoutExercise } from '../../common/interfaces';
 
@@ -28,7 +27,5 @@ export class CreateWorkoutDto {
 
   @IsArray()
   @ArrayMinSize(1)
-  // ? question: how to properly validate array of objects ?
-  //   @Type(() => WorkoutExercise)
   exercises: WorkoutExercise[];
 }

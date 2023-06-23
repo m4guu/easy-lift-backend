@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Programs } from 'src/common/entities';
-import { MongoRepository, FindOptionsWhere } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { ProgramLevels } from 'src/common/enums';
 import { ObjectId } from 'mongodb';

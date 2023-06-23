@@ -3,9 +3,10 @@ import { WorkoutsController } from './workouts.controller';
 import { WorkoutsService } from './workouts.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Workouts } from 'src/common/entities';
+import { UserProgressModule } from 'src/user-progress/user-progress.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Workouts])],
+  imports: [UserProgressModule, TypeOrmModule.forFeature([Workouts])],
   controllers: [WorkoutsController],
   providers: [WorkoutsService],
 })

@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workouts } from 'src/common/entities';
-import { FindOptionsWhere, MongoRepository, Between } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
 import { PAGE_SIZE } from 'src/config/constans';
 import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
 import generateWorkoutFiltersByQuery from 'src/utils/GenerateWorkoutFiltersByQuery';
+import { generateUserProgress } from 'src/utils';
+import { UserProgressService } from 'src/user-progress/user-progress.service';
 
 @Injectable()
 export class WorkoutsService {
   constructor(
     @InjectRepository(Workouts)
     private readonly workoutsRepository: MongoRepository<Workouts>,
+    private userProgressService: UserProgressService,
   ) {}
 
   async findOne(id: string): Promise<Workouts> {
@@ -35,7 +38,15 @@ export class WorkoutsService {
     const workout = this.workoutsRepository.create(createWorkoutDto);
     workout.date = new Date(workout.date);
 
-    await this.workoutsRepository.save(workout);
+    await this.workoutsRepository.save(workout).then(() => {
+      if (!workout.isDraft) {
+        const userProgress = generateUserProgress(workout);
+        userProgress.map(
+          async (userProgres) =>
+            await this.userProgressService.create(userProgres),
+        );
+      }
+    });
     return true;
   }
 
@@ -48,7 +59,9 @@ export class WorkoutsService {
   }
 
   async delete(id: string): Promise<boolean> {
-    await this.workoutsRepository.delete(id);
+    await this.workoutsRepository
+      .delete(id)
+      .then(() => this.userProgressService.delete(id));
     return true;
   }
 }
