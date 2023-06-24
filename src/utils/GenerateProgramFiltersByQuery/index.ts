@@ -4,7 +4,7 @@ import { GetProgramsQueryDto } from 'src/programs/dto/GetProgramsQueryDto';
 import { Programs } from 'src/common/entities';
 
 const generateTrainerFiltersByQuery = (query: GetProgramsQueryDto) => {
-  const filter: any = {};
+  const filter: FindOptionsWhere<Programs> | FindOptionsWhere<Programs>[] = {};
 
   if (query.creator) {
     filter.creator = query.creator;
