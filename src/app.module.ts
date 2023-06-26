@@ -15,6 +15,8 @@ import { UploadPaths } from './common/enums';
 import { WeightHistoryModule } from './weight-history/weight-history.module';
 import { WorkoutsModule } from './workouts/workouts.module';
 import { ProgramsModule } from './programs/programs.module';
+import { UserProgressController } from './user-progress/user-progress.controller';
+import { UserProgressModule } from './user-progress/user-progress.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { ProgramsModule } from './programs/programs.module';
     WeightHistoryModule,
     WorkoutsModule,
     ProgramsModule,
+    UserProgressModule,
   ],
+  controllers: [UserProgressController],
 })
 export class AppModule {}

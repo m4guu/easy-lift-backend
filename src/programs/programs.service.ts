@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Programs } from 'src/common/entities';
-import { MongoRepository, FindOptionsWhere } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { ProgramLevels } from 'src/common/enums';
 import { ObjectId } from 'mongodb';
 import { PAGE_SIZE } from 'src/config/constans';
 import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
+import { generateProgramFiltersByQuery } from 'src/utils';
 
 @Injectable()
 export class ProgramsService {
@@ -23,12 +24,10 @@ export class ProgramsService {
     const skip = (+query.page - 1) * PAGE_SIZE;
     const take = +query.limit || PAGE_SIZE;
 
-    const filter: FindOptionsWhere<Programs> = {};
-    if (query.creator) {
-      filter.creator = query.creator;
-    }
+    const filters = generateProgramFiltersByQuery(query);
+
     return await this.programsRepository.find({
-      where: filter,
+      where: filters,
       skip,
       take,
     });

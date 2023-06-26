@@ -8,6 +8,10 @@ export class GetWorkoutsQueryDto {
   @IsOptional()
   creator?: string;
 
+  @IsString()
+  @IsOptional()
+  name?: string;
+
   @IsOptional()
   @IsNumberString()
   monthNumber?: string;

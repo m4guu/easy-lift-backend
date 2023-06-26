@@ -6,20 +6,23 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-
-import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/common/entities';
 import { MongoRepository } from 'typeorm';
-import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
 import { ObjectId } from 'mongodb';
+
+import { WeightHistoryService } from 'src/weight-history/weight-history.service';
+import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
+import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
-import { saltRounds } from './constans';
-import { WeightHistoryService } from 'src/weight-history/weight-history.service';
-import { Role } from 'src/common/enums';
+import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
+
+import { generateTrainerFiltersByQuery } from 'src/utils';
+
+import { User } from 'src/common/entities';
 import { PAGE_SIZE } from 'src/config/constans';
+import { saltRounds } from './constans';
 
 @Injectable()
 export class UsersService {
@@ -34,10 +37,17 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ _id: new ObjectId(id) });
   }
 
-  async getUsersByRole(role: Role, page: number): Promise<User[]> {
-    const skip = (+page - 1) * PAGE_SIZE;
+  async findTrainersByQuery(query: TrainersByQueryDto): Promise<User[]> {
+    const skip = (+query.page - 1) * PAGE_SIZE;
+
+    const filters = generateTrainerFiltersByQuery(query);
+
     return await this.usersRepository.find({
-      where: { role },
+      where: {
+        role: query.role,
+        isConfigured: true,
+        ...filters,
+      },
       skip,
       take: PAGE_SIZE,
     });
