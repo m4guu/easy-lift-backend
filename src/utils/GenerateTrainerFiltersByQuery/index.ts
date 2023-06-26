@@ -4,7 +4,7 @@ import { TrainersByQueryDto } from 'src/users/dto/TrainersByQueryDto';
 import { User } from 'src/common/entities';
 
 const generateTrainerFiltersByQuery = (query: TrainersByQueryDto) => {
-  const filter: FindOptionsWhere<User> | FindOptionsWhere<User>[] = {};
+  const filter: any = {};
 
   if (query.name) {
     filter.name = new RegExp(`^${query.name}`);

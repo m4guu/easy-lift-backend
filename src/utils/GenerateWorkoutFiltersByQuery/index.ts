@@ -5,7 +5,7 @@ import { GetWorkoutsQueryDto } from 'src/workouts/dto/GetWorkoutsQueryDto';
 import { Workouts } from 'src/common/entities';
 
 const generateWorkoutFiltersByQuery = (query: GetWorkoutsQueryDto) => {
-  const filter: FindOptionsWhere<Workouts> | FindOptionsWhere<Workouts>[] = {};
+  const filter: any = {};
 
   if (query.creator) {
     filter.creator = query.creator;
