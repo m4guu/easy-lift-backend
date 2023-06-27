@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/CreateUserDto';
 import { LoginPayload, User } from 'src/common/interfaces';
 import { AssignedEmailError } from './errors/AssignedEmailError';
 import { MissingTokenError } from './errors/MissingTokenError';
-import { ServerError } from 'src/libs/errors';
+import { AppHttpException, ServerError } from 'src/libs/errors';
 import { InvalidTokenError } from './errors/InvalidTokenError';
 import { Error } from 'src/libs/errors/common';
 
@@ -55,7 +55,11 @@ export class AuthService {
     if (user) {
       throw new AssignedEmailError();
     }
-    return await this.usersService.create(createUserDto);
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (err) {
+      throw new AppHttpException(err);
+    }
   }
 
   login(user: User): { user: User; token: string } {
