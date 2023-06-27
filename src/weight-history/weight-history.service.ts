@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Inject,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { format } from 'date-fns';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -13,6 +8,7 @@ import { BodyWeight, WeightUpdate } from 'src/common/interfaces';
 import { UsersService } from 'src/users/users.service';
 import { WeightHistoryNotFound } from './errors/WeightHistoryNotFound';
 import { AppHttpException, ServerError } from 'src/libs/errors';
+import { Error } from 'src/libs/errors/common';
 
 @Injectable()
 export class WeightHistoryService {
@@ -23,11 +19,17 @@ export class WeightHistoryService {
     private usersService: UsersService,
   ) {}
 
-  async getWeightHistoryByUserId(userId: string): Promise<WeightHistory> {
-    return this.weightHistoryRepository.findOneBy({ userId: userId });
+  async getWeightHistoryByUserId(
+    userId: string,
+  ): Promise<WeightHistory | Error> {
+    try {
+      return await this.weightHistoryRepository.findOneBy({ userId: userId });
+    } catch (err) {
+      throw new WeightHistoryNotFound();
+    }
   }
 
-  async create(userId: string): Promise<boolean> {
+  async create(userId: string): Promise<boolean | Error> {
     const weightHistory = this.weightHistoryRepository.create({
       userId: userId,
       bodyWeights: [],
@@ -45,7 +47,6 @@ export class WeightHistoryService {
     const weightHistory = await this.weightHistoryRepository.findOneBy({
       userId: userId,
     });
-
     if (!weightHistory) {
       throw new WeightHistoryNotFound();
     }
