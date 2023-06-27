@@ -54,7 +54,7 @@ export class UsersService {
   }
 
   async findUserByEmail(userEmail: string): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({ email: userEmail });
+    return await this.usersRepository.findOneBy({ email: userEmail });
   }
 
   async create(createUserDto: CreateUserDto): Promise<boolean> {

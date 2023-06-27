@@ -1,6 +1,0 @@
-enum ERROR_ID {
-  // AUTH
-  EMAIL_ALREADY_ASSIGNED = 'EMAIL_ALREADY_ASSIGNED',
-}
-
-export default ERROR_ID;

@@ -6,6 +6,11 @@ import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from './dto/CreateUserDto';
 import { LoginPayload, User } from 'src/common/interfaces';
+import { AssignedEmailError } from './errors/AssignedEmailError';
+import { MissingTokenError } from './errors/MissingTokenError';
+import { ServerError } from 'src/libs/errors';
+import { InvalidTokenError } from './errors/InvalidTokenError';
+import { Error } from 'src/libs/errors/common';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +22,9 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<Omit<User, 'password'> | null> {
+  ): Promise<Omit<User, 'password'>> {
     const user = await this.usersService.findUserByEmail(email);
+
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
@@ -26,29 +32,33 @@ export class AuthService {
   }
 
   async validateUserByToken(
-    token: string,
+    token: string | undefined,
   ): Promise<Omit<User, 'password'> | null> {
+    if (!token) {
+      throw new MissingTokenError();
+    }
+
     try {
       const decodedToken = await this.jwtService.verifyAsync(token);
-      const userEmail = decodedToken.email;
-
-      const user = await this.usersService.findUserByEmail(userEmail);
+      const user = await this.usersService.findUserByEmail(decodedToken.email);
+      if (!user || !decodedToken) {
+        throw new InvalidTokenError();
+      }
       return user;
     } catch (error) {
-      throw new Error('Invalid token');
+      throw new ServerError();
     }
   }
 
-  async register(createUserDto: CreateUserDto): Promise<boolean> {
+  async register(createUserDto: CreateUserDto): Promise<boolean | Error> {
     const user = await this.usersService.findUserByEmail(createUserDto.email);
-    if (!user) {
-      return await this.usersService.create(createUserDto);
-    } else {
-      throw new Error('The email is occupied by another user.');
+    if (user) {
+      throw new AssignedEmailError();
     }
+    return await this.usersService.create(createUserDto);
   }
 
-  async login(user: User): Promise<{ user: User; token: string }> {
+  login(user: User): { user: User; token: string } {
     const payload: LoginPayload = {
       email: user.email,
       sub: user.id.toString(),
