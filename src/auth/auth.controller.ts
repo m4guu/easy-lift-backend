@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 import { CreateUserDto } from './dto/CreateUserDto';
+import { AppHttpException } from 'src/libs/errors';
 
 @Controller('auth')
 export class AuthController {
@@ -20,26 +21,20 @@ export class AuthController {
 
   @Get('loginWithToken')
   async loginWithToken(@Req() req: Request, @Res() res: Response) {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({ message: 'Missing token' });
-    }
     try {
-      const user = await this.authService.validateUserByToken(token);
-      if (!user) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-
+      const user = await this.authService.validateUserByToken(
+        req.cookies.token,
+      );
       return res.json({ user });
     } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+      throw new AppHttpException(error);
     }
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const { user, token } = await this.authService.login(req.user);
+  login(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const { user, token } = this.authService.login(req.user);
     // sending the access token as a http only cookie & return user after successful login
     res
       .cookie('token', token, {
@@ -52,13 +47,17 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res: Response) {
+  logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('token');
-    res.status(200).json({ message: 'Logged out successfully' });
+    res.status(200).json({ message: 'Logged out successfully.' });
   }
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+    try {
+      return await this.authService.register(createUserDto);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 }

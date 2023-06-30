@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Inject,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { format } from 'date-fns';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -11,6 +6,9 @@ import { MongoRepository } from 'typeorm';
 import { WeightHistory } from 'src/common/entities';
 import { BodyWeight, WeightUpdate } from 'src/common/interfaces';
 import { UsersService } from 'src/users/users.service';
+import { WeightHistoryNotFound } from './errors/WeightHistoryNotFound';
+import { AppHttpException, ServerError } from 'src/libs/errors';
+import { Error } from 'src/libs/errors/common';
 
 @Injectable()
 export class WeightHistoryService {
@@ -21,38 +19,57 @@ export class WeightHistoryService {
     private usersService: UsersService,
   ) {}
 
-  async getWeightHistoryByUserId(userId: string): Promise<WeightHistory> {
-    return this.weightHistoryRepository.findOneBy({ userId: userId });
+  async getWeightHistoryByUserId(
+    userId: string,
+  ): Promise<WeightHistory | Error> {
+    try {
+      return await this.weightHistoryRepository.findOneBy({ userId: userId });
+    } catch (err) {
+      throw new WeightHistoryNotFound();
+    }
   }
 
-  async create(userId: string): Promise<boolean> {
+  async create(userId: string): Promise<boolean | Error> {
     const weightHistory = this.weightHistoryRepository.create({
       userId: userId,
       bodyWeights: [],
     });
 
-    await this.weightHistoryRepository.save(weightHistory);
-    return true;
+    try {
+      await this.weightHistoryRepository.save(weightHistory);
+      return true;
+    } catch (error) {
+      throw new ServerError();
+    }
   }
 
-  async update({ userId, weight }: WeightUpdate): Promise<boolean> {
+  async update({ userId, weight }: WeightUpdate): Promise<boolean | Error> {
     const weightHistory = await this.weightHistoryRepository.findOneBy({
       userId: userId,
     });
+    if (!weightHistory) {
+      throw new WeightHistoryNotFound();
+    }
 
-    if (weightHistory && weightHistory.id) {
-      const newBodyWeight: BodyWeight = {
-        date: format(new Date(), 'yyyy-MM-dd'),
-        weight: weight,
-      };
-      weightHistory.bodyWeights.push(newBodyWeight);
-      await this.weightHistoryRepository.save(weightHistory).then(async () => {
-        // update user current weight
-        this.usersService.updateUserWeight(userId, weight);
-      });
-      return true;
-    } else {
-      throw new NotFoundException('Weight history not found');
+    const newBodyWeight: BodyWeight = {
+      date: format(new Date(), 'yyyy-MM-dd'),
+      weight: weight,
+    };
+    weightHistory.bodyWeights.push(newBodyWeight);
+    try {
+      return await this.weightHistoryRepository
+        .save(weightHistory)
+        .then(async () => {
+          // try update user current weight
+          try {
+            await this.usersService.updateUserWeight(userId, weight);
+            return true;
+          } catch (err) {
+            throw new AppHttpException(err);
+          }
+        });
+    } catch (error) {
+      throw new ServerError();
     }
   }
 }

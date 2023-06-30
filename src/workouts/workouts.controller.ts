@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
 import { Role } from 'src/common/enums';
 import { HasRole } from 'src/auth/decorators/has-role.decorator';
+import { AppHttpException } from 'src/libs/errors';
 
 @Controller('workouts')
 export class WorkoutsController {
@@ -23,20 +24,32 @@ export class WorkoutsController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.workoutService.findOne(id);
+    try {
+      return await this.workoutService.findOne(id);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: GetWorkoutsQueryDto) {
-    return await this.workoutService.findAllByQueries(query);
+    try {
+      return await this.workoutService.findAllByQueries(query);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @HasRole(Role.user)
   @Post()
   async create(@Body() createWorkoutDto: CreateWorkoutDto) {
-    return await this.workoutService.create(createWorkoutDto);
+    try {
+      return await this.workoutService.create(createWorkoutDto);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -46,13 +59,21 @@ export class WorkoutsController {
     @Param('id') id: string,
     @Body() updatedWorkout: CreateWorkoutDto,
   ) {
-    return await this.workoutService.update(id, updatedWorkout);
+    try {
+      return await this.workoutService.update(id, updatedWorkout);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @HasRole(Role.user)
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    return await this.workoutService.delete(id);
+    try {
+      return await this.workoutService.delete(id);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 }

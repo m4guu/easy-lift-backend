@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  Inject,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -18,9 +12,14 @@ import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
 
-import { generateTrainerFiltersByQuery } from 'src/utils';
+import { comparePasswords, generateTrainerFiltersByQuery } from 'src/utils';
+import { AppHttpException, ServerError } from 'src/libs/errors';
+
+import { InvalidPasswordError } from './errors/InvalidPasswordError';
+import { UserNotFoundError } from './errors/UserNotFoundError';
 
 import { User } from 'src/common/entities';
+import { Error } from 'src/libs/errors/common';
 import { PAGE_SIZE } from 'src/config/constans';
 import { saltRounds } from './constans';
 
@@ -33,31 +32,42 @@ export class UsersService {
     private weightHistoryService: WeightHistoryService,
   ) {}
 
-  async findOne(id: string): Promise<User> {
-    return await this.usersRepository.findOneBy({ _id: new ObjectId(id) });
+  async findOne(id: string): Promise<User | Error> {
+    try {
+      return await this.usersRepository.findOneBy({
+        _id: new ObjectId(id),
+      });
+    } catch (err) {
+      throw new UserNotFoundError();
+    }
   }
 
-  async findTrainersByQuery(query: TrainersByQueryDto): Promise<User[]> {
+  async findTrainersByQuery(
+    query: TrainersByQueryDto,
+  ): Promise<User[] | Error> {
     const skip = (+query.page - 1) * PAGE_SIZE;
-
     const filters = generateTrainerFiltersByQuery(query);
 
-    return await this.usersRepository.find({
-      where: {
-        role: query.role,
-        isConfigured: true,
-        ...filters,
-      },
-      skip,
-      take: PAGE_SIZE,
-    });
+    try {
+      return await this.usersRepository.find({
+        where: {
+          role: query.role,
+          isConfigured: true,
+          ...filters,
+        },
+        skip,
+        take: PAGE_SIZE,
+      });
+    } catch (error) {
+      throw new ServerError();
+    }
   }
 
   async findUserByEmail(userEmail: string): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({ email: userEmail });
+    return await this.usersRepository.findOneBy({ email: userEmail });
   }
 
-  async create(createUserDto: CreateUserDto): Promise<boolean> {
+  async create(createUserDto: CreateUserDto): Promise<boolean | Error> {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
@@ -68,23 +78,32 @@ export class UsersService {
       isConfigured: false,
     });
 
-    await this.usersRepository.save(user).then(async () => {
-      // create user weight history
-      await this.weightHistoryService.create(user.id.toString());
-    });
-
-    return true;
+    try {
+      await this.usersRepository.save(user).then(async () => {
+        // try create user weight history
+        try {
+          return await this.weightHistoryService.create(user.id.toString());
+        } catch (err) {
+          throw new AppHttpException(err);
+        }
+      });
+      return true;
+    } catch (err) {
+      throw new ServerError();
+    }
   }
 
   async configureUser(
     userId: string,
     configuredUserDto: ConfiguredUserDto,
     filePath: string | undefined,
-  ): Promise<boolean> {
+  ): Promise<boolean | Error> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
     });
-
+    if (!user) {
+      throw new UserNotFoundError();
+    }
     const configuredUser: Partial<User> = {
       name: configuredUserDto.name,
       isConfigured: true,
@@ -93,32 +112,41 @@ export class UsersService {
       height: Number(configuredUserDto.height),
     };
 
-    if (user && user.id) {
+    try {
       await this.usersRepository
         .update(user.id, configuredUser)
         .then(async () => {
           // update user weight history
-          await this.weightHistoryService.update({
-            userId: user.id.toString(),
-            weight: Number(configuredUserDto.currentWeight),
-          });
+          try {
+            await this.weightHistoryService.update({
+              userId: user.id.toString(),
+              weight: Number(configuredUserDto.currentWeight),
+            });
+          } catch (error) {
+            throw new AppHttpException(error);
+          }
         });
       return true;
-    } else {
-      throw new NotFoundException('User not found');
+    } catch (error) {
+      throw new ServerError();
     }
   }
 
-  async updateUserWeight(userId: string, weight: number): Promise<boolean> {
+  async updateUserWeight(
+    userId: string,
+    weight: number,
+  ): Promise<boolean | Error> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
     });
-
-    if (user && user.id) {
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+    try {
       await this.usersRepository.update(user.id, { currentWeight: weight });
       return true;
-    } else {
-      throw new NotFoundException('User not found');
+    } catch (err) {
+      throw new ServerError();
     }
   }
 
@@ -126,10 +154,13 @@ export class UsersService {
     userId: string,
     configuredTrainerDto: ConfiguredTrainerDto,
     filePath?: string,
-  ): Promise<boolean> {
+  ): Promise<boolean | Error> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(userId),
     });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
 
     const configuredTrainer: Partial<User> = {
       name: configuredTrainerDto.name,
@@ -139,29 +170,36 @@ export class UsersService {
       gyms: JSON.parse(configuredTrainerDto.gyms),
     };
 
-    if (user && user.id) {
+    try {
       await this.usersRepository.update(user.id, configuredTrainer);
       return true;
-    } else {
-      throw new NotFoundException('Trainer not found');
+    } catch (error) {
+      throw new ServerError();
     }
   }
 
-  async updateEmail(updateEmailDto: UpdateEmailDto): Promise<boolean> {
+  async updateEmail(updateEmailDto: UpdateEmailDto): Promise<boolean | Error> {
     const user = await this.usersRepository.findOneBy({
       _id: new ObjectId(updateEmailDto.userId),
     });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+    const isValidPassword = await comparePasswords(
+      updateEmailDto.password,
+      user.password,
+    );
+    if (!isValidPassword) {
+      throw new InvalidPasswordError();
+    }
 
-    if (
-      user &&
-      (await bcrypt.compare(updateEmailDto.password, user.password))
-    ) {
+    try {
       await this.usersRepository.update(user.id, {
         email: updateEmailDto.newEmail,
       });
       return true;
-    } else {
-      throw new BadRequestException('Wrong password');
+    } catch (err) {
+      throw new ServerError();
     }
   }
 
@@ -170,22 +208,30 @@ export class UsersService {
       _id: new ObjectId(updatePasswordDto.userId),
     });
 
-    if (
-      user &&
-      (await bcrypt.compare(updatePasswordDto.password, user.password))
-    ) {
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    const isValidPassword = await comparePasswords(
+      updatePasswordDto.password,
+      user.password,
+    );
+    if (!isValidPassword) {
+      throw new InvalidPasswordError();
+    }
+
+    try {
       const newSalt = await bcrypt.genSalt(saltRounds);
       const newHashedPassword = await bcrypt.hash(
         updatePasswordDto.newPassword,
         newSalt,
       );
-
       await this.usersRepository.update(user.id, {
         password: newHashedPassword,
       });
       return true;
-    } else {
-      throw new BadRequestException('Wrong password');
+    } catch (err) {
+      throw new ServerError();
     }
   }
 }

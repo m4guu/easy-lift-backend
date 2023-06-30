@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
+import { AppHttpException } from 'src/libs/errors';
 
 @Controller('programs')
 export class ProgramsController {
@@ -27,13 +28,21 @@ export class ProgramsController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.programsService.findOne(id);
+    try {
+      return await this.programsService.findOne(id);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Query() query: GetProgramsQueryDto) {
-    return await this.programsService.findAll(query);
+    try {
+      return await this.programsService.findAll(query);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,7 +53,11 @@ export class ProgramsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() program: CreateProgramDto,
   ) {
-    return this.programsService.createProgram(program, file.path);
+    try {
+      return await this.programsService.createProgram(program, file.path);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -57,13 +70,21 @@ export class ProgramsController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const imagePath = file ? file.path : undefined;
-    return await this.programsService.update(id, updatedProgram, imagePath);
+    try {
+      return await this.programsService.update(id, updatedProgram, imagePath);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @HasRole(Role.trainer)
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    return await this.programsService.delete(id);
+    try {
+      return await this.programsService.delete(id);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 }

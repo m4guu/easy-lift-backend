@@ -6,6 +6,8 @@ import { existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { UploadPaths } from 'src/common/enums';
+import { AppHttpException } from 'src/libs/errors';
+import { UnsupportedFileTypeError } from './errors/UnsupportedFileTypeError';
 
 export const multerOptions: MulterOptions = {
   limits: {
@@ -19,13 +21,7 @@ export const multerOptions: MulterOptions = {
     if (file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
       cb(null, true);
     } else {
-      cb(
-        new HttpException(
-          `Unsupported file type ${extname(file.originalname)}`,
-          HttpStatus.BAD_REQUEST,
-        ),
-        false,
-      );
+      cb(new AppHttpException(new UnsupportedFileTypeError()), false);
     }
   },
   storage: diskStorage({

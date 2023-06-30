@@ -20,6 +20,7 @@ import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
+import { AppHttpException } from 'src/libs/errors';
 
 @Controller('users')
 export class UsersController {
@@ -28,13 +29,21 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    try {
+      return await this.usersService.findOne(id);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async findTrainersByQuery(@Query() query: TrainersByQueryDto) {
-    return this.usersService.findTrainersByQuery(query);
+    try {
+      return this.usersService.findTrainersByQuery(query);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -46,8 +55,15 @@ export class UsersController {
     @Body() configuredUserDto: ConfiguredUserDto,
   ) {
     const imagePath = file ? file.path : undefined;
-
-    return this.usersService.configureUser(id, configuredUserDto, imagePath);
+    try {
+      return await this.usersService.configureUser(
+        id,
+        configuredUserDto,
+        imagePath,
+      );
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -59,23 +75,34 @@ export class UsersController {
     @Body() configuredTrainerDto: ConfiguredTrainerDto,
   ) {
     const imagePath = file ? file.path : undefined;
-
-    return this.usersService.configureTrainer(
-      id,
-      configuredTrainerDto,
-      imagePath,
-    );
+    try {
+      return this.usersService.configureTrainer(
+        id,
+        configuredTrainerDto,
+        imagePath,
+      );
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/updateEmail')
   async updateEmail(@Body() updateEmailDto: UpdateEmailDto) {
-    return this.usersService.updateEmail(updateEmailDto);
+    try {
+      return await this.usersService.updateEmail(updateEmailDto);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/updatePassword')
   async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
-    return this.usersService.updatePassword(updatePasswordDto);
+    try {
+      return await this.usersService.updatePassword(updatePasswordDto);
+    } catch (error) {
+      throw new AppHttpException(error);
+    }
   }
 }
