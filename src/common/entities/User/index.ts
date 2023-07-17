@@ -26,9 +26,6 @@ class User {
   image: string;
 
   @Column()
-  expirationDate: string;
-
-  @Column()
   currentWeight?: number;
 
   @Column()
