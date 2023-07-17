@@ -1,7 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
-
-import { TrainersByQueryDto } from 'src/users/dto/TrainersByQueryDto';
-import { User } from 'src/common/entities';
+import { TrainersByQueryDto } from '../../users/dto/TrainersByQueryDto';
 
 const generateTrainerFiltersByQuery = (query: TrainersByQueryDto) => {
   const filter: any = {};

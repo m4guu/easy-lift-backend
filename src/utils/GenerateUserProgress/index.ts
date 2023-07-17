@@ -1,6 +1,6 @@
 import { getTodayDate } from '../Date/DateUtils';
 
-import { UserProgres, Workouts } from 'src/common/entities';
+import { UserProgres, Workouts } from '../../common/entities';
 
 const generateUserProgress = (workout: Workouts): Omit<UserProgres, 'id'>[] => {
   return workout.exercises.map((exercise) => {

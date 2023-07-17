@@ -1,6 +1,6 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
-import { Role } from 'src/common/enums';
+import { Role } from '../../enums';
 
 @Entity()
 class User {

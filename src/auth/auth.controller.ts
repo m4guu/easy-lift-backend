@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 import { CreateUserDto } from './dto/CreateUserDto';
-import { AppHttpException } from 'src/libs/errors';
+import { AppHttpException } from '../libs/errors';
 
 @Controller('auth')
 export class AuthController {

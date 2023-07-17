@@ -4,24 +4,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
-import { WeightHistoryService } from 'src/weight-history/weight-history.service';
-import { CreateUserDto } from 'src/auth/dto/CreateUserDto';
+import { WeightHistoryService } from '../weight-history/weight-history.service';
+import { CreateUserDto } from '../auth/dto/CreateUserDto';
 import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
 
-import { comparePasswords, generateTrainerFiltersByQuery } from 'src/utils';
-import { AppHttpException, ServerError } from 'src/libs/errors';
+import { comparePasswords, generateTrainerFiltersByQuery } from '../utils';
+import { AppHttpException, ServerError } from '../libs/errors';
 
 import { InvalidPasswordError } from './errors/InvalidPasswordError';
 import { UserNotFoundError } from './errors/UserNotFoundError';
 
-import { User } from 'src/common/entities';
-import { Error } from 'src/libs/errors/common';
-import { PAGE_SIZE } from 'src/config/constans';
-import { saltRounds } from './constans';
+import { User } from '../common/entities';
+import { Error } from '../libs/errors/common';
+import { PAGE_SIZE } from '../config/constans';
+import { SALT_ROUNDS } from './constans';
 
 @Injectable()
 export class UsersService {
@@ -68,7 +68,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<boolean | Error> {
-    const salt = await bcrypt.genSalt(saltRounds);
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
     const user = this.usersRepository.create({
@@ -221,7 +221,7 @@ export class UsersService {
     }
 
     try {
-      const newSalt = await bcrypt.genSalt(saltRounds);
+      const newSalt = await bcrypt.genSalt(SALT_ROUNDS);
       const newHashedPassword = await bcrypt.hash(
         updatePasswordDto.newPassword,
         newSalt,

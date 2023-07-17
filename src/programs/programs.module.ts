@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { ProgramsController } from './programs.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Programs } from 'src/common/entities';
+import { Programs } from '../common/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Programs])],

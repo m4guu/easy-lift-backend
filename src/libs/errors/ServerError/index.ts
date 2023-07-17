@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { DomainError, ErrorId } from 'src/libs/errors';
+import { DomainError, ErrorId } from '..';
 
 class ServerError extends DomainError {
   constructor() {

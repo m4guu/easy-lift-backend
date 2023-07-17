@@ -1,5 +1,5 @@
 import { ObjectId } from 'typeorm';
-import { Role } from 'src/common/enums';
+import { Role } from '../../enums';
 
 interface User {
   id: ObjectId;

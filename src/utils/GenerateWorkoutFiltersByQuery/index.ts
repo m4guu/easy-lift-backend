@@ -1,8 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
-
-import { GetWorkoutsQueryDto } from 'src/workouts/dto/GetWorkoutsQueryDto';
-
-import { Workouts } from 'src/common/entities';
+import { GetWorkoutsQueryDto } from '../../workouts/dto/GetWorkoutsQueryDto';
 
 const generateWorkoutFiltersByQuery = (query: GetWorkoutsQueryDto) => {
   const filter: any = {};

@@ -1,5 +1,5 @@
 import { IsNumberString, IsOptional, IsString } from 'class-validator';
-import { ProgramLevels } from 'src/common/enums';
+import { ProgramLevels } from '../../common/enums';
 
 export class GetProgramsQueryDto {
   @IsNumberString()

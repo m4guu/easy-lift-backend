@@ -1,6 +1,6 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
-import { BodyWeight } from 'src/common/interfaces';
+import { BodyWeight } from '../../interfaces';
 
 @Entity()
 class WeightHistory {

@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { WeightHistoryService } from './weight-history.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateWeightDto } from './dto/UpdateWeight.dto';
-import { AppHttpException } from 'src/libs/errors';
+import { AppHttpException } from '../libs/errors';
 
 @Controller('weight-history')
 export class WeightHistoryController {

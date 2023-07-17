@@ -3,18 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
-import { generateProgramFiltersByQuery } from 'src/utils';
+import { generateProgramFiltersByQuery } from '../utils';
 
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
 
 import { ProgramNotFoundError } from './errors/ProgramNotFoundError';
-import { ServerError } from 'src/libs/errors';
+import { ServerError } from '../libs/errors';
 
-import { ProgramLevels } from 'src/common/enums';
-import { PAGE_SIZE } from 'src/config/constans';
-import { Programs } from 'src/common/entities';
-import { Error } from 'src/libs/errors/common';
+import { ProgramLevels } from '../common/enums';
+import { PAGE_SIZE } from '../config/constans';
+import { Programs } from '../common/entities';
+import { Error } from '../libs/errors/common';
 
 @Injectable()
 export class ProgramsService {

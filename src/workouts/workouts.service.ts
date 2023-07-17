@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Workouts } from 'src/common/entities';
+import { Workouts } from '../common/entities';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
-import { PAGE_SIZE } from 'src/config/constans';
+import { PAGE_SIZE } from '../config/constans';
 import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
-import generateWorkoutFiltersByQuery from 'src/utils/GenerateWorkoutFiltersByQuery';
-import { generateUserProgress } from 'src/utils';
-import { UserProgressService } from 'src/user-progress/user-progress.service';
-import { Error } from 'src/libs/errors/common';
+import generateWorkoutFiltersByQuery from '../utils/GenerateWorkoutFiltersByQuery';
+import { generateUserProgress } from '../utils';
+import { UserProgressService } from '../user-progress/user-progress.service';
+import { Error } from '../libs/errors/common';
 import { WorkoutNotFoundError } from './errors/WokroutNotFoundError';
-import { AppHttpException, ServerError } from 'src/libs/errors';
+import { AppHttpException, ServerError } from '../libs/errors';
 
 @Injectable()
 export class WorkoutsService {

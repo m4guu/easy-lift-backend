@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { CreateWorkoutDto } from './dto/CreateWorkoutDto';
 import { WorkoutsService } from './workouts.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetWorkoutsQueryDto } from './dto/GetWorkoutsQueryDto';
-import { Role } from 'src/common/enums';
-import { HasRole } from 'src/auth/decorators/has-role.decorator';
-import { AppHttpException } from 'src/libs/errors';
+import { Role } from '../common/enums';
+import { HasRole } from '../auth/decorators/has-role.decorator';
+import { AppHttpException } from '../libs/errors';
 
 @Controller('workouts')
 export class WorkoutsController {

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { DomainError, ErrorId } from 'src/libs/errors';
+import { DomainError, ErrorId } from '../../libs/errors';
 
 export class MissingTokenError extends DomainError {
   constructor() {
