@@ -10,7 +10,12 @@ import { MockType } from '../../../common/types';
 import { MongoRepository } from 'typeorm';
 import { User } from '../../../common/entities';
 import { Error } from '../../../libs/errors/common';
-import { ErrorMock, userMock } from '../constans';
+import {
+  ErrorMock,
+  ID_MOCK,
+  configureUserDtoMock,
+  userMock,
+} from '../constans';
 import { AppHttpException } from '../../../libs/errors';
 
 jest.mock('../../users.service');
@@ -47,19 +52,17 @@ describe('UserController', () => {
 
   describe('findOne controller', () => {
     describe('positive scenarios', () => {
-      describe('when findOne is called', () => {
-        let user: User | Error;
-        beforeEach(async () => {
-          service.findOne.mockResolvedValue(userMock());
-          user = await controller.findOne(userMock().id.toString());
-        });
+      let user: User | Error;
+      beforeEach(async () => {
+        service.findOne.mockResolvedValue(userMock());
+        user = await controller.findOne(userMock().id.toString());
+      });
 
-        it('should call userService', () => {
-          expect(service.findOne).toBeCalledWith(userMock().id.toString());
-        });
-        it('should return a user', () => {
-          expect(user).toEqual(userMock());
-        });
+      it('should call userService.findOne', () => {
+        expect(service.findOne).toBeCalledWith(userMock().id.toString());
+      });
+      it('should return a user', () => {
+        expect(user).toEqual(userMock());
       });
     });
     describe('negative scenarios', () => {
@@ -70,6 +73,31 @@ describe('UserController', () => {
         expect(controller.findOne(userMock().id.toString())).rejects.toThrow(
           AppHttpException,
         );
+      });
+    });
+  });
+
+  describe('configureUser controller', () => {
+    describe('positive scenarios', () => {
+      let isConfigured: boolean | Error;
+      beforeEach(async () => {
+        service.configureUser.mockResolvedValue(true);
+        isConfigured = await controller.configureUser(
+          ID_MOCK,
+          undefined,
+          configureUserDtoMock(),
+        );
+      });
+
+      it('should call userService.configureUser', () => {
+        expect(service.configureUser).toBeCalledWith(
+          ID_MOCK,
+          configureUserDtoMock(),
+          undefined,
+        );
+      });
+      it('should return a true', () => {
+        expect(isConfigured).toEqual(true);
       });
     });
   });
