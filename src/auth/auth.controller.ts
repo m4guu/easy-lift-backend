@@ -8,12 +8,15 @@ import {
   Get,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { AuthService } from './auth.service';
 
+import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 import { CreateUserDto } from './dto/CreateUserDto';
 import { AppHttpException } from '../libs/errors';
+import { CookieKeys } from '../common/enums';
+
+import { tokenCookieOptions } from './constans';
 
 @Controller('auth')
 export class AuthController {
@@ -36,19 +39,12 @@ export class AuthController {
   login(@Req() req, @Res({ passthrough: true }) res: Response) {
     const { user, token } = this.authService.login(req.user);
     // sending the access token as a http only cookie & return user after successful login
-    res
-      .cookie('token', token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-        expires: new Date(Date.now() + 36000000),
-      })
-      .send({ user });
+    res.cookie(CookieKeys.TOKEN, token, tokenCookieOptions).send({ user });
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('token');
+    res.clearCookie(CookieKeys.TOKEN);
     res.status(200).json({ message: 'Logged out successfully.' });
   }
 

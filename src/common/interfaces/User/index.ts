@@ -9,7 +9,6 @@ interface User {
   role: Role;
   isConfigured: boolean;
   image: string | File;
-  expirationDate: string;
   currentWeight?: number;
   description?: string;
   gyms?: string[];

@@ -40,6 +40,8 @@ describe('UserService', () => {
     weightHistoryService =
       module.get<jest.Mocked<WeightHistoryService>>(WeightHistoryService);
     repository = module.get(USER_REPOSITORY_TOKEN);
+
+    jest.clearAllMocks();
   });
 
   describe('initial tests', () => {
