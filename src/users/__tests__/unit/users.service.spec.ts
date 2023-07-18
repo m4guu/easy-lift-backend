@@ -22,7 +22,7 @@ import {
 import {
   USER_REPOSITORY_TOKEN,
   UserRepository,
-} from '../../../tests/mocks/repositories';
+} from '../../../__mocks__/repositories';
 
 jest.mock('../../../weight-history/weight-history.service');
 

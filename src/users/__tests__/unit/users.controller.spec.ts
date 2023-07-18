@@ -5,7 +5,7 @@ import { UsersService } from '../../users.service';
 import {
   USER_REPOSITORY_TOKEN,
   UserRepository,
-} from '../../../tests/mocks/repositories';
+} from '../../../__mocks__/repositories';
 import { MockType } from '../../../common/types';
 import { MongoRepository } from 'typeorm';
 import { User } from '../../../common/entities';
