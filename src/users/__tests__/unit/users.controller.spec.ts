@@ -66,10 +66,9 @@ describe('UserController', () => {
       });
     });
     describe('negative scenarios', () => {
-      beforeEach(async () => {
-        service.findOne.mockRejectedValue(new ErrorMock());
-      });
       it('should throw an AppHttpException if service.findOne throws an error', () => {
+        service.findOne.mockRejectedValue(new ErrorMock());
+
         expect(controller.findOne(userMock().id.toString())).rejects.toThrow(
           AppHttpException,
         );

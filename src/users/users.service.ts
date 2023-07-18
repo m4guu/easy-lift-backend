@@ -82,6 +82,7 @@ export class UsersService {
       await this.usersRepository.save(user).then(async () => {
         // try create user weight history
         try {
+          // ? question: shouldn't this action be in the controller and not caught with the above action in Promise.all ?
           return await this.weightHistoryService.create(user.id.toString());
         } catch (err) {
           throw new AppHttpException(err);

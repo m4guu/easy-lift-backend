@@ -4,8 +4,9 @@ import { MockType } from '../../common/types';
 
 export const repositoryMockFactory: <T>() => MockType<MongoRepository<T>> =
   jest.fn(() => ({
-    findOne: jest.fn((entity) => entity),
-    findAll: jest.fn(() => []),
-    save: jest.fn((entity) => entity),
+    save: jest.fn(),
+    create: jest.fn(),
+    findOneBy: jest.fn(),
+    update: jest.fn(),
     // ... add more methods as needed
   }));
