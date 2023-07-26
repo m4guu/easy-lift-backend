@@ -34,7 +34,7 @@ import { UserProgressModule } from './user-progress/user-progress.module';
       inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads', 'avatars'),
+      rootPath: join(process.cwd(), 'uploads', 'avatars'),
       serveRoot: UploadPaths.USERS_AVATARS,
       serveStaticOptions: {
         index: false, // Disable serving index.html

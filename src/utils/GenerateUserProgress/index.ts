@@ -1,4 +1,4 @@
-import { getTodayDate } from '../Date/DateUtils';
+import { format } from 'date-fns';
 
 import { UserProgres, Workouts } from '../../common/entities';
 
@@ -11,9 +11,9 @@ const generateUserProgress = (workout: Workouts): Omit<UserProgres, 'id'>[] => {
     return {
       workoutId: workout.id.toString(),
       userId: workout.creator,
-      exerciseId: id,
+      exerciseId: id.toString(),
       exerciseName: name,
-      date: getTodayDate(),
+      date: format(workout.date, 'yyyy-MM-dd'),
       repMax,
       sets,
     };

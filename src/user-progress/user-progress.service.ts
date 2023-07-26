@@ -18,6 +18,7 @@ export class UserProgressService {
   ): Promise<UserProgres[] | Error> {
     const filters = generateUserProgresFiltersByQuery(query);
 
+    console.log(query);
     try {
       return await this.userProgressRepository.find({
         where: filters,

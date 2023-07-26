@@ -51,11 +51,24 @@ export class WeightHistoryService {
       throw new WeightHistoryNotFound();
     }
 
-    const newBodyWeight: BodyWeight = {
-      date: format(new Date(), 'yyyy-MM-dd'),
-      weight: weight,
-    };
-    weightHistory.bodyWeights.push(newBodyWeight);
+    const newDate = format(new Date(), 'yyyy-MM-dd');
+
+    const existingWeight = weightHistory.bodyWeights.find(
+      (bodyWeight) => bodyWeight.date === newDate,
+    );
+
+    if (existingWeight) {
+      // If an entry with the same date exists, update the weight
+      existingWeight.weight = weight;
+    } else {
+      // If no entry with the same date exists, add a new entry
+      const newBodyWeight: BodyWeight = {
+        date: newDate,
+        weight: weight,
+      };
+      weightHistory.bodyWeights.push(newBodyWeight);
+    }
+
     try {
       return await this.weightHistoryRepository
         .save(weightHistory)

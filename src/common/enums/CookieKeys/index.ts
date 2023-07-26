@@ -1,5 +1,5 @@
 enum CookieKeys {
-  TOKEN = 'TOKEN',
+  TOKEN = 'token',
 }
 
 export default CookieKeys;
