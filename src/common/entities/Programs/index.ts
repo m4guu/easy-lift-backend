@@ -1,7 +1,7 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
-import { ProgramLevels } from 'src/common/enums';
-import { ProgramItem } from 'src/common/interfaces';
+import { ProgramLevels } from '../../enums';
+import { ProgramItem } from '../../interfaces';
 
 @Entity()
 class Programs {

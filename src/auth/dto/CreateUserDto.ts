@@ -1,4 +1,4 @@
-import { Role } from 'src/common/enums';
+import { Role } from '../../common/enums';
 import { IsEmail, MinLength, MaxLength, IsEnum } from 'class-validator';
 
 export class CreateUserDto {

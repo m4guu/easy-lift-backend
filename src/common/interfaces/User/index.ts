@@ -1,5 +1,5 @@
 import { ObjectId } from 'typeorm';
-import { Role } from 'src/common/enums';
+import { Role } from '../../enums';
 
 interface User {
   id: ObjectId;
@@ -9,7 +9,6 @@ interface User {
   role: Role;
   isConfigured: boolean;
   image: string | File;
-  expirationDate: string;
   currentWeight?: number;
   description?: string;
   gyms?: string[];

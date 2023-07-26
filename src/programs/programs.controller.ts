@@ -12,14 +12,14 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { HasRole } from 'src/auth/decorators/has-role.decorator';
-import { Role } from 'src/common/enums';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HasRole } from '../auth/decorators/has-role.decorator';
+import { Role } from '../common/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from 'src/config/multer.config';
+import { multerOptions } from '../config/multer.config';
 import { CreateProgramDto } from './dto/CreateProgramDto';
 import { GetProgramsQueryDto } from './dto/GetProgramsQueryDto';
-import { AppHttpException } from 'src/libs/errors';
+import { AppHttpException } from '../libs/errors';
 
 @Controller('programs')
 export class ProgramsController {

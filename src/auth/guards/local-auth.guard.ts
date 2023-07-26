@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AppHttpException, ServerError } from 'src/libs/errors';
+import { AppHttpException, ServerError } from '../../libs/errors';
 import { InvalidLoginCredentialsError } from '../errors/InvalidLoginCredentialsError';
 
 @Injectable()

@@ -3,12 +3,12 @@ import { format } from 'date-fns';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
-import { WeightHistory } from 'src/common/entities';
-import { BodyWeight, WeightUpdate } from 'src/common/interfaces';
-import { UsersService } from 'src/users/users.service';
+import { WeightHistory } from '../common/entities';
+import { BodyWeight, WeightUpdate } from '..//common/interfaces';
+import { UsersService } from '../users/users.service';
 import { WeightHistoryNotFound } from './errors/WeightHistoryNotFound';
-import { AppHttpException, ServerError } from 'src/libs/errors';
-import { Error } from 'src/libs/errors/common';
+import { AppHttpException, ServerError } from '../libs/errors';
+import { Error } from '../libs/errors/common';
 
 @Injectable()
 export class WeightHistoryService {
@@ -51,11 +51,24 @@ export class WeightHistoryService {
       throw new WeightHistoryNotFound();
     }
 
-    const newBodyWeight: BodyWeight = {
-      date: format(new Date(), 'yyyy-MM-dd'),
-      weight: weight,
-    };
-    weightHistory.bodyWeights.push(newBodyWeight);
+    const newDate = format(new Date(), 'yyyy-MM-dd');
+
+    const existingWeight = weightHistory.bodyWeights.find(
+      (bodyWeight) => bodyWeight.date === newDate,
+    );
+
+    if (existingWeight) {
+      // If an entry with the same date exists, update the weight
+      existingWeight.weight = weight;
+    } else {
+      // If no entry with the same date exists, add a new entry
+      const newBodyWeight: BodyWeight = {
+        date: newDate,
+        weight: weight,
+      };
+      weightHistory.bodyWeights.push(newBodyWeight);
+    }
+
     try {
       return await this.weightHistoryRepository
         .save(weightHistory)

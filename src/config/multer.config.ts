@@ -1,12 +1,12 @@
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { extname } from 'path';
 import { Request } from 'express';
 import { existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { UploadPaths } from 'src/common/enums';
-import { AppHttpException } from 'src/libs/errors';
+
+import { UploadPaths } from '../common/enums';
+import { AppHttpException } from '../libs/errors';
 import { UnsupportedFileTypeError } from './errors/UnsupportedFileTypeError';
 
 export const multerOptions: MulterOptions = {
@@ -30,7 +30,6 @@ export const multerOptions: MulterOptions = {
       file: Express.Multer.File,
       cb: (error: Error | null, filename: string) => void,
     ) {
-      // ? question: how i can make new folder ?
       if (!existsSync('.' + UploadPaths.USERS_AVATARS)) {
         mkdirSync('.' + UploadPaths.USERS_AVATARS);
       }

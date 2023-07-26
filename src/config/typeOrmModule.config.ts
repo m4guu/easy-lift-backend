@@ -8,7 +8,7 @@ import {
   Workouts,
   Programs,
   UserProgres,
-} from 'src/common/entities';
+} from '../common/entities';
 
 export const typeOrmModuleConfig = async (
   configService: ConfigService,

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserProgres } from 'src/common/entities';
+import { UserProgres } from '../common/entities';
 import { MongoRepository } from 'typeorm';
 import { GetUserProgressQueryDto } from './dto/GetUserProgressQueryDto';
-import { generateUserProgresFiltersByQuery } from 'src/utils';
-import { ServerError } from 'src/libs/errors';
+import { generateUserProgresFiltersByQuery } from '../utils';
+import { ServerError } from '../libs/errors';
 
 @Injectable()
 export class UserProgressService {
@@ -18,6 +18,7 @@ export class UserProgressService {
   ): Promise<UserProgres[] | Error> {
     const filters = generateUserProgresFiltersByQuery(query);
 
+    console.log(query);
     try {
       return await this.userProgressRepository.find({
         where: filters,

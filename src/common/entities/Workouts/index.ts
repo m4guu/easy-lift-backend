@@ -1,6 +1,6 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
-import { WorkoutExercise } from 'src/common/interfaces';
+import { WorkoutExercise } from '../../interfaces';
 
 @Entity()
 class Workouts {

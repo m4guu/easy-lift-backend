@@ -13,14 +13,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 import { UsersService } from './users.service';
 import { ConfiguredUserDto } from './dto/ConfiguredUser.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import { multerOptions } from 'src/config/multer.config';
+import { multerOptions } from '../config/multer.config';
 import { ConfiguredTrainerDto } from './dto/ConfiguredTrainer.dto';
 import { UpdateEmailDto } from './dto/UpdateEmail.dto';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { TrainersByQueryDto } from './dto/TrainersByQueryDto';
-import { AppHttpException } from 'src/libs/errors';
+import { AppHttpException } from '../libs/errors';
 
 @Controller('users')
 export class UsersController {

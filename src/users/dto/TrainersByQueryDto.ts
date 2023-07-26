@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Role } from 'src/common/enums';
+import { Role } from '../../common/enums';
 
 export class TrainersByQueryDto {
   @IsEnum(Role)

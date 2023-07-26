@@ -1,6 +1,6 @@
 import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
-import { Set } from 'src/common/interfaces';
+import { Set } from '../../interfaces';
 
 @Entity()
 class UserProgres {

@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 import { CreateUserDto } from './dto/CreateUserDto';
-import { LoginPayload, User } from 'src/common/interfaces';
+import { LoginPayload, User } from '../common/interfaces';
 import { AssignedEmailError } from './errors/AssignedEmailError';
 import { MissingTokenError } from './errors/MissingTokenError';
-import { AppHttpException, ServerError } from 'src/libs/errors';
+import { AppHttpException, ServerError } from '../libs/errors';
 import { InvalidTokenError } from './errors/InvalidTokenError';
-import { Error } from 'src/libs/errors/common';
+import { Error } from '../libs/errors/common';
 
 @Injectable()
 export class AuthService {

@@ -1,8 +1,8 @@
 import { FindOptionsWhere } from 'typeorm';
 
-import { GetUserProgressQueryDto } from 'src/user-progress/dto/GetUserProgressQueryDto';
+import { GetUserProgressQueryDto } from '../../user-progress/dto/GetUserProgressQueryDto';
 
-import { UserProgres } from 'src/common/entities';
+import { UserProgres } from '../../common/entities';
 
 const generateUserProgresFiltersByQuery = (query: GetUserProgressQueryDto) => {
   const filter:
